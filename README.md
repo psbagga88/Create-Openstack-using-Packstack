@@ -125,8 +125,3 @@ neutron net-create vlan-2144 --provider:network_type vlan \
   --provider:segmentation_id 2144 --provider:physical_network physnet1
 neutron subnet-create vlan-2144 10.5.135.0/24
 
-
-
-
-
-![image](https://github.com/user-attachments/assets/75642f45-97fd-4618-a6d0-2f9ef56abaea)

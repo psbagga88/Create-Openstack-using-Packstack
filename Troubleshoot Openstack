@@ -1,0 +1,376 @@
+
+
+	1.	Access OpenStack Dashboard
+	•	Open the OpenStack dashboard in a browser:
+http://<controller-ip>/dashboard/
+	2.	Verify OpenStack Services
+	•	Ensure all services are running:
+systemctl status openstack-*
+	3.	Check Network Bridges
+	•	Verify if OVS bridges exist:
+ovs-vsctl show
+	•	If not present, create them:
+ovs-vsctl add-br br-ex
+ovs-vsctl add-port br-ex enp6s0
+	4.	Upload an Image to Glance
+	•	Upload a sample image to Glance:
+glance image-create --name "CentOS-7.0-cloud" \
+  --disk-format qcow2 --container-format bare \
+  --file <image-file-path>
+
+	5.	Create Network and Subnets
+	•	Example commands:
+neutron net-create vlan-2144 --provider:network_type vlan \
+  --provider:segmentation_id 2144 --provider:physical_network physnet1
+neutron subnet-create vlan-2144 10.5.135.0/24
+
+[prabhjit.bagga@sjc-obs-linux18 ~]$ cat openstack-cheat.txt
+To clear the token table, an administrative user must run the keystone-manage token_flush command to flush the tokens. When you flush tokens, expired tokens are deleted and traceability is eliminated.
+
+==================================================================
+ovs-vsctl show
+!
+ovs-vsctl add-br br-enp7
+!
+ovs-vsctl add-port br-enp7 enp7s0
+!
+ovs-vsctl list-ports br-enp7
+!
+ovs-vsctl show
+                //ovs-vsctl del-port br-enp7 enp5s0\\
+===================================================================
+To clear the token table, an administrative user must run the keystone-manage token_flush command to flush the tokens. When you flush
+tokens, expired tokens are deleted and traceability is eliminated.
+
+keystone-manage token_flush
+
+glance image-create --name Ubuntu-14.04-Cloud-Image.qcow2 --disk-format qcow2 --container-format bare --file Ubuntu-14.04-Cloud-Image.qcow2 --progress
+
+glance image-create --name Centos9.qcow2 --disk-format qcow2 --container-format bare --file CentOS-Stream-GenericCloud-9-latest.aarch64.qcow2 --progress
+
+neutron net-create vlan-2140 --shared --router:external true --provider:network_type vlan  --provider:physical_network physnet1 --provider:segmentation_id 2140
+neutron subnet-create vlan-2140 10.5.131.0/24 --name 2140-subnet --allocation-pool start=10.5.131.20,end=10.5.131.250 --gateway=10.5.131.1
+glance image-download --file cirros 4d68e709-3f0f-4db3-af61-2fd7d34f83be
+
+Logs
+tail -f nova-api.log & tail -f nova-compute.log &  tail -f nova-conductor.log &  tail -f nova-manage.log  &  tail -f nova-novncproxy.log &  tail -f nova-scheduler.log
+
+==================================================================
+grep -v '^$\|^#' /etc/neutron/plugins/ml2/openvswitch_agent.ini
+grep -v '^$\|^#' /etc/neutron/neutron.conf
+==================================================================
+Compute node restarts
+Nova:
+service openstack-nova-compute restart
+sleep 2
+service openstack-nova-compute status
+
+Neutron
+tail -f /var/log/neutron/* &
+service neutron-openvswitch-agent restart
+sleep 2
+kill tail
+==================================================================
+tcpdump -i enp7s0 -n -e port 67    // to get vlan tag information
+==================================================================
+
+
+Openstack Ocata CLI commands
+===================================
+
+Create Instance || 	openstack server create --flavor m1.nano --image cirros --nic net-id=PROVIDER_NET_ID --security-group default --key-name mykey provider-instance
+openstack server list
+openstack console url show provider-instance
+openstack security group list
+openstack network list
+openstack image list
+openstack flavor list
+
+
+neutron net-create vlan-2140 --shared --router:external true --provider:network_type vlan  --provider:physical_network physnet1 --provider:segmentation_id 2140
+neutron subnet-create vlan-2140 10.5.131.0/24 --name 2140-subnet --allocation-pool start=10.5.131.20,end=10.5.131.250 --gateway=10.5.131.1
+
+
+
+ssh -i ./id_rsa ubuntu@10.5.204.46    << controller 
+ssh -i ./id_rsa ubuntu@10.5.204.45    << compute
+ssh -i ./id_rsa ubuntu@10.5.204.47    << compute
+ssh -i ./id_rsa ubuntu@10.5.204.155    << compute
+
+
+DC13 - FI 
+=========
+10.198.10.10 
+username: sysops
+J@sper123
+
+tcpdump -i eno50 -vvv -s 1500 port 67 or port 68
+grep -v '^$\|^#' /etc/neutron/neutron.conf
+mysql -u root -p
+CREATE DATABASE nova_api;
+CREATE DATABASE nova;
+openstack user create --domain default --password-prompt nova
+openstack role add --project service --user nova admin
+apt install nova-api nova-conductor nova-consoleauth   nova-novncproxy nova-scheduler
+licensing: https://www.ubuntu.com/cloud/plans-and-pricing
+
+dc13-lostk-001
+dc13-psp-001
+dc2-postk-001
+dc2-postk-030
+dc2-psp-001
+
+NTP server IP 
+10.0.1.1 in SJC and 10.0.2.1 in PHX.
+ 
+DNS Server IP
+10.0.1.35 in DC1 and 10.2.1.35 in DC2
+
+NTP
+=====
+DC13: 10.0.1.1
+DC1: 
+DC2: 
+
+DNS
+=====
+DC13: 10.0.1.1
+DC1: 
+DC2: 
+
+
+
+
+Project	Network Name	Subnets Associated	DHCP Agents	Shared	External	Status	Admin State	Actions	
+	admin	vlan-2144	        • 2144-subnet 10.5.135.0/24	1	Yes	No	Active	UP	Edit Network
+	admin	vlan-2143	        • 2143-subnet 10.5.134.0/24	1	Yes	No	Active	UP	Edit Network
+	admin	vlan-2140	        • 2140-subnet 10.5.131.0/24	1	Yes	No	Active	UP	Edit Network
+	admin	vlan-2105	        • 2105-subnet 10.5.204.0/24	1	Yes	No	Active	UP	Edit Network
+	admin	vlan-2141	        • 2141-subnet 10.5.132.0/24	1	Yes	No	Active	UP	Edit Network
+	admin	vlan-2142	        • 2142-subnet 10.5.133.0/24	1	Yes	No	Active	UP	Edit Network
+
+
+
+
+Nova services restart - on controller
+===================
+service nova-api status
+service nova-consoleauth status
+service nova-scheduler status
+service nova-conductor status
+service nova-novncproxy status
+
+service nova-api restart
+service nova-consoleauth restart
+service nova-scheduler restart
+service nova-conductor restart
+service nova-novncproxy restart
+!
+!
+nova hypervisor-list
+
+Nova services restart - on compute
+=============================
+root@compute:~# service nova-compute restart
+
+Neutron services restart - on controller
+===================
+service nova-api restart
+service neutron-server restart
+service neutron-linuxbridge-agent restart
+service neutron-dhcp-agent restart
+service neutron-metadata-agent restart
+!
+!
+neutron agent-list
+
+Neutron services restart - on compute
+==================================
+service neutron-linuxbridge-agent restart
+
+
+[root@controller ~(keystone_admin)]$ cat service-test.sh
+echo nova hypervisor-list
+nova hypervisor-list
+sleep 2
+echo neutron agent-list
+neutron agent-list
+sleep 2
+
+[root@controller ~(keystone_admin)]$
+[root@controller ~(keystone_admin)]$
+[root@controller ~(keystone_admin)]$ cat nova-restart.sh
+echo sourcing admin RC
+source ~/admin-openrc
+echo service nova-api restart
+service nova-api restart
+echo service nova-consoleauth restart
+service nova-consoleauth restart
+echo service nova-scheduler restart
+service nova-scheduler restart
+echo service nova-conductor restart
+service nova-conductor restart
+echo service nova-novncproxy restart
+service nova-novncproxy restart
+sleep 2
+nova hypervisor-list
+[root@controller ~(keystone_admin)]$
+[root@controller ~(keystone_admin)]$
+[root@controller ~(keystone_admin)]$ cat neutron-restart.sh
+echo sourcing admin RC
+source ~/admin-openrc
+echo  service nova-api restart
+service nova-api restart
+echo service neutron-server restart
+service neutron-server restart
+echo service neutron-linuxbridge-agent restart
+service neutron-linuxbridge-agent restart
+echo service neutron-dhcp-agent restart
+service neutron-dhcp-agent restart
+echo service neutron-metadata-agent restart
+service neutron-metadata-agent restart
+sleep 2
+neutron agent-list
+
+mySql database
+————————————
+mysql -u root -p
+Neutron
+========
+su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
+
+Nova Database
+=============
+su -s /bin/sh -c "nova-manage api_db sync" nova
+su -s /bin/sh -c "nova-manage db sync" nova
+
+
+
+root@controller:~# openstack compute service list
++----+------------------+------------+----------+---------+-------+----------------------------+
+| ID | Binary           | Host       | Zone     | Status  | State | Updated At                 |
++----+------------------+------------+----------+---------+-------+----------------------------+
+|  7 | nova-consoleauth | controller | internal | enabled | up    | 2017-05-09T22:38:27.000000 |
+|  8 | nova-scheduler   | controller | internal | enabled | up    | 2017-05-09T22:38:23.000000 |
+|  9 | nova-conductor   | controller | internal | enabled | up    | 2017-05-09T22:38:24.000000 |
+| 12 | nova-compute     | compute    | nova     | enabled | up    | 2017-05-09T22:38:18.000000 |
++----+------------------+------------+----------+---------+-------+----------------------------+
+
+root@controller:~# openstack network agent list
+root@controller:~# neutron agent-list
++--------------------------------------+--------------------+------------+-------------------+-------+----------------+---------------------------+
+| id                                   | agent_type         | host       | availability_zone | alive | admin_state_up | binary                    |
++--------------------------------------+--------------------+------------+-------------------+-------+----------------+---------------------------+
+| 144aff51-10a0-409a-bd85-7e05cb4c555e | DHCP agent         | controller | nova              | :-)   | True           | neutron-dhcp-agent        |
+| 3c2cfc30-244f-4978-b1ad-a704dc5f4aed | Linux bridge agent | controller |                   | :-)   | True           | neutron-linuxbridge-agent |
+| 675ec97d-5a73-4980-8823-d6affda553d8 | Metadata agent     | controller |                   | :-)   | True           | neutron-metadata-agent    |
+| f8bf7fc4-3e4d-40ec-8098-b9bbf7cdf1ec | Linux bridge agent | compute    |                   | :-)   | True           | neutron-linuxbridge-agent |
++--------------------------------------+--------------------+------------+-------------------+-------+----------------+---------------------------+
+root@controller:~#
+
+neutron ext-list
+
+
+
+openstack service list
+neutron agent-list
+
+
+
+OSP dashboard	http://10.5.80.115:8081/admin/instances/	Bdoyle/elk
+ILO - server access	https://ops1-scllab05-mgmt.i.jaspersystems.com/	root/egbdf.!!
+ 	ssh ubuntu@compute2	root/madmin
+ Landscape	  https://10.5.80.115:8082/	 madmin@cisco.com/madmin
+					
+
+VNC Flow
+————————
+
+In both controller and compute in /etc/nova/nova.conf
+logs - /var/log/nova/nova-novncproxy.log
+
+controller
+=========
+$my_ip - IP of controller node
+[vnc]
+vncserver_listen = $my_ip
+vncserver_proxyclient_address = $my_ip
+
+root@controller1:~# ps -ef | grep vnc
+nova     32431     1  0 Jun01 ?        00:00:19 /usr/bin/python /usr/bin/nova-novncproxy --config-file=/etc/nova/nova.conf --log-file=/var/log/nova/nova-novncproxy.log
+nova     53172 32431  0 23:47 ?        00:00:00 /usr/bin/python /usr/bin/nova-novncproxy --config-file=/etc/nova/nova.conf --log-file=/var/log/nova/nova-novncproxy.log
+root     53431 53361  0 23:59 pts/0    00:00:00 grep --color=auto vnc
+
+root@controller1:~# netstat -nap | grep 6080
+tcp        0      0 0.0.0.0:6080            0.0.0.0:*               LISTEN      32431/python
+tcp        0      0 10.5.204.46:6080        192.168.62.100:51695    ESTABLISHED 53172/python
+tcp        0      0 10.5.204.46:6822        10.5.204.20:56080       ESTABLISHED 28926/ceph-osd
+tcp        0      0 10.5.204.46:60806       10.5.204.46:5672        ESTABLISHED 42243/python
+tcp        0      0 10.5.204.46:46080       10.5.204.45:6827        ESTABLISHED 31720/ceph-osd
+tcp6       0      0 10.5.204.46:5672        10.5.204.46:60806       ESTABLISHED 13468/beam.smp
+root@controller1:~# netstat -nap | grep 5900
+tcp        0      0 10.5.204.46:44404       10.5.204.45:5900        ESTABLISHED 53172/python
+tcp        0      0 10.5.204.46:45900       10.5.204.46:3306        ESTABLISHED 21963/python
+tcp        0      0 10.5.204.46:3306        10.5.204.46:45900       ESTABLISHED 12258/mysqld
+
+compute
+=========
+$my_ip - IP of compute node
+[vnc]
+enabled = True
+vncserver_listen = $my_ip
+vncserver_proxyclient_address = $my_ip
+novncproxy_base_url = http://10.5.204.46:6080/vnc_auto.html
+root@compute1:~#
+root@compute1:~#
+root@compute1:~#
+root@compute1:~# netstat -nap | grep 6080
+tcp        0      0 10.5.204.45:6827        10.5.204.46:46080       ESTABLISHED 9969/ceph-osd
+root@compute1:~#
+root@compute1:~# netstat -nap | grep 5900
+tcp        0      0 0.0.0.0:5900            0.0.0.0:*               LISTEN      39195/qemu-system-x
+tcp        0      0 10.5.204.45:5900        10.5.204.46:44404       ESTABLISHED 39195/qemu-system-x
+root@compute1:~#
+root@compute1:~#
+root@compute1:~# ps -ef | grep vnc
+libvirt+   706     1  0 May26 ?        00:32:24 /usr/bin/qemu-system-x86_64 -name instance-0000000d -S -machine pc-i440fx-xenial,accel=tcg,usb=off -cpu Haswell-noTSX,+abm,+pdpe1gb,+rdrand,+f16c,+osxsave,+dca,+pdcm,+xtpr,+tm2,+est,+smx,+vmx,+ds_cpl,+monitor,+dtes64,+pbe,+tm,+ht,+ss,+acpi,+ds,+vme -m 8192 -realtime mlock=off -smp 4,sockets=4,cores=1,threads=1 -uuid 841fcbf6-d6f2-4498-a5af-17cf6d613806 -smbios type=1,manufacturer=OpenStack Foundation,product=OpenStack Nova,version=13.1.3,serial=ba0ec06f-5d31-4a79-8696-d80c70bb025d,uuid=841fcbf6-d6f2-4498-a5af-17cf6d613806,family=Virtual Machine -no-user-config -nodefaults -chardev socket,id=charmonitor,path=/var/lib/libvirt/qemu/domain-instance-0000000d/monitor.sock,server,nowait -mon chardev=charmonitor,id=monitor,mode=control -rtc base=utc -no-shutdown -boot strict=on -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=/var/lib/nova/instances/841fcbf6-d6f2-4498-a5af-17cf6d613806/disk,format=qcow2,if=none,id=drive-virtio-disk0,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -netdev tap,fd=28,id=hostnet0 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=fa:16:3e:f8:f0:93,bus=pci.0,addr=0x3 -chardev file,id=charserial0,path=/var/lib/nova/instances/841fcbf6-d6f2-4498-a5af-17cf6d613806/console.log -device isa-serial,chardev=charserial0,id=serial0 -chardev pty,id=charserial1 -device isa-serial,chardev=charserial1,id=serial1 -device usb-tablet,id=input0 -vnc 0.0.0.0:7 -k en-us -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5 -msg timestamp=on
+libvirt+ 39195     1  0 May31 ?        00:14:20 /usr/bin/qemu-system-x86_64 -name instance-00000011 -S -machine pc-i440fx-xenial,accel=tcg,usb=off -cpu Haswell-noTSX,+abm,+pdpe1gb,+rdrand,+f16c,+osxsave,+dca,+pdcm,+xtpr,+tm2,+est,+smx,+vmx,+ds_cpl,+monitor,+dtes64,+pbe,+tm,+ht,+ss,+acpi,+ds,+vme -m 8192 -realtime mlock=off -smp 4,sockets=4,cores=1,threads=1 -uuid 7a867cf0-44ba-4898-8772-a7182ca44ac6 -smbios type=1,manufacturer=OpenStack Foundation,product=OpenStack Nova,version=13.1.3,serial=ba0ec06f-5d31-4a79-8696-d80c70bb025d,uuid=7a867cf0-44ba-4898-8772-a7182ca44ac6,family=Virtual Machine -no-user-config -nodefaults -chardev socket,id=charmonitor,path=/var/lib/libvirt/qemu/domain-instance-00000011/monitor.sock,server,nowait -mon chardev=charmonitor,id=monitor,mode=control -rtc base=utc -no-shutdown -boot strict=on -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=/var/lib/nova/instances/7a867cf0-44ba-4898-8772-a7182ca44ac6/disk,format=qcow2,if=none,id=drive-virtio-disk0,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -netdev tap,fd=26,id=hostnet0 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=fa:16:3e:c9:30:97,bus=pci.0,addr=0x3 -chardev file,id=charserial0,path=/var/lib/nova/instances/7a867cf0-44ba-4898-8772-a7182ca44ac6/console.log -device isa-serial,chardev=charserial0,id=serial0 -chardev pty,id=charserial1 -device isa-serial,chardev=charserial1,id=serial1 -device usb-tablet,id=input0 -vnc 0.0.0.0:0 -k en-us -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5 -msg timestamp=on
+root     68458 68378  0 23:59 pts/1    00:00:00 grep --color=auto vnc
+root@compute1:~#
+root@compute1:~#
+root@compute1:~#
+
+
+[filter:authtoken]
+admin_user=neutron
+auth_port=35357
+admin_password=6e3350b12fed4bfe
+auth_protocol=http
+auth_uri=http://10.19.1.30:5000/
+admin_tenant_name=services
+auth_host=10.19.1.30
+~
+Boot instance via CLI	nova boot --image cirros-qcow2 --flavor m1.tiny MyVolumeInstance
+Save snapshot outside openstack	Glance image-list
+	        glance image-download --file CPNR_Volte.raw --progress 9d4f9f51-c3eb-4ceb-abfb-ef2c7e4d0cb1
+Boot instance and attach volume to it 	nova --debug boot --poll --flavor 3d7b1e4a-a4b0-4f1c-a883-f9d25ae167c8 --image e14d7110-da75-4ce3-9e46-d9c3c5452fd2 --key-name blah --nic net-id=103bce5a-51c0-43dd-9f3f-fab87044c8dc  --block-device-mapping vdb=82f377ef-90f0-48a8-9062-a6afa98988d5:::0 test3
+Network create	 neutron net-create net-286 --tenant-id=12a4fe65a03f4ae48961073a7e4e3174 --provider:network_type vlan --provider:physical_network physnet1 --provider:segmentation_id 286
+Attach interface to existing VM	                1. neutron port-create ID-OF-Network
+	                2. nova interface-attach --port-id=1dd19d11-822e-457d-8107-42c810acffa6 VFN-26
+	                3. nova interface-detach demo-intance1 demo-net-port-id
+Upload images on glance 	glance image-create --name qvpc-di-cf-64115 --disk-format qcow2 --container-format bare --is-public True --file qvpc-di-cf.qcow2 --progress
+Restart DHCP agent RHEL	systemctl restart neutron-dhcp-agent.service     // same way to stop and start 
+aliases	alias neutronlog="tail -f /var/log/neutron/server.log"
+	 alias novalog="tail -f /var/log/nova/nova-api.log"
+	 alias ml2="cd /etc/neutron/plugins/ml2/"
+	alias nova="cd /etc/nova"
+	 
+ port create with fixed ip 	neutron port-create --fixed-ip subnet_id=SUBNET_ID,ip_address=IP_FROM_POOL --name PORT_NAME NETWORK_ID
+	
+	
+	neutron port-create --fixed-ip subnet_id=76b3537c-4fbb-4f06-aa8c-795617a0821e,ip_address=192.168.0.50 --name fixedtest b4988d1f-6546-4bb2-afd9-ab9afb211763
+	 
+dnsmasq_config_file =/etc/neutron/dnsmasq-neutron.conf
+
+
+
